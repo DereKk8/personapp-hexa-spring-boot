@@ -99,16 +99,16 @@ java -jar rest-input-adapter/target/rest-input-adapter-*.jar
 docker run -it --rm -v "$(pwd):/app" -w /app --network personapp-hexa-spring-boot_default `
   -e SPRING_DATASOURCE_URL=jdbc:mariadb://mariadb:3306/persona_db `
   -e SPRING_DATA_MONGODB_HOST=mongodb `
-  maven:3.8-eclipse-temurin-11 mvn spring-boot:run -pl cli-input-adapter
+  maven:3.8-eclipse-temurin-11 sh -c "mvn package -DskipTests -q && java -jar cli-input-adapter/target/cli-input-adapter-*.jar"
 
 # En bash (Linux/Mac):
 docker run -it --rm -v "$(pwd):/app" -w /app --network personapp-hexa-spring-boot_default \
   -e SPRING_DATASOURCE_URL=jdbc:mariadb://mariadb:3306/persona_db \
   -e SPRING_DATA_MONGODB_HOST=mongodb \
-  maven:3.8-eclipse-temurin-11 mvn spring-boot:run -pl cli-input-adapter
+  maven:3.8-eclipse-temurin-11 sh -c "mvn package -DskipTests -q && java -jar cli-input-adapter/target/cli-input-adapter-*.jar"
 ```
 
-> Nota: Requiere que los contenedores de las bases de datos esten corriendo via `docker compose up -d`. El contenedor se conecta a la misma red Docker para alcanzar MariaDB y MongoDB por nombre de servicio.
+> Nota: Requiere que los contenedores de las bases de datos esten corriendo via `docker compose up -d`. El contenedor se conecta a la misma red Docker para alcanzar MariaDB y MongoDB por nombre de servicio. La primera ejecucion descarga dependencias (tarda ~2-3 min); las siguientes usan cache.
 
 **Sin Docker (si tiene JDK 11 + Maven local):**
 ```bash
