@@ -47,6 +47,7 @@ public class ProfesionMenu {
 				}
 			} catch (InputMismatchException e) {
 				log.warn("Solo se permiten numeros.");
+				keyboard.next();
 			}
 		} while (!isValid);
 	}
@@ -62,7 +63,6 @@ public class ProfesionMenu {
 	}
 
 	private void crearProfesion(ProfesionInputAdapterCli adapter, Scanner keyboard) {
-		keyboard.nextLine();
 		System.out.print("Ingrese nombre: ");
 		String nombre = keyboard.nextLine();
 		System.out.print("Ingrese descripcion: ");
@@ -71,15 +71,12 @@ public class ProfesionMenu {
 	}
 
 	private void buscarProfesion(ProfesionInputAdapterCli adapter, Scanner keyboard) {
-		System.out.print("Ingrese id: ");
-		Integer id = keyboard.nextInt();
+		Integer id = leerEntero(keyboard, "Ingrese id: ");
 		adapter.obtenerProfesion(id);
 	}
 
 	private void actualizarProfesion(ProfesionInputAdapterCli adapter, Scanner keyboard) {
-		System.out.print("Ingrese id de la profesion a actualizar: ");
-		Integer id = keyboard.nextInt();
-		keyboard.nextLine();
+		Integer id = leerEntero(keyboard, "Ingrese id de la profesion a actualizar: ");
 		System.out.print("Ingrese nombre: ");
 		String nombre = keyboard.nextLine();
 		System.out.print("Ingrese descripcion: ");
@@ -88,9 +85,19 @@ public class ProfesionMenu {
 	}
 
 	private void eliminarProfesion(ProfesionInputAdapterCli adapter, Scanner keyboard) {
-		System.out.print("Ingrese id: ");
-		Integer id = keyboard.nextInt();
+		Integer id = leerEntero(keyboard, "Ingrese id: ");
 		adapter.eliminarProfesion(id);
+	}
+
+	private static Integer leerEntero(Scanner keyboard, String prompt) {
+		while (true) {
+			System.out.print(prompt);
+			try {
+				return Integer.valueOf(keyboard.nextLine().trim());
+			} catch (NumberFormatException e) {
+				log.warn("Solo se permiten números.");
+			}
+		}
 	}
 
 	private int leerOpcion(Scanner keyboard) {
@@ -99,6 +106,7 @@ public class ProfesionMenu {
 			return keyboard.nextInt();
 		} catch (InputMismatchException e) {
 			log.warn("Solo se permiten numeros.");
+			keyboard.next();
 			return leerOpcion(keyboard);
 		}
 	}

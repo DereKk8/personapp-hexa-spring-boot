@@ -95,24 +95,29 @@ java -jar rest-input-adapter/target/rest-input-adapter-*.jar
 
 **Con Docker (recomendado si no tiene JDK 11 + Maven local):**
 ```bash
-# En PowerShell (Windows):
-docker run -it --rm -v "$(pwd):/app" -w /app --network personapp-hexa-spring-boot_default `
-  -e SPRING_DATASOURCE_URL=jdbc:mariadb://mariadb:3306/persona_db `
-  -e SPRING_DATA_MONGODB_HOST=mongodb `
-  maven:3.8-eclipse-temurin-11 sh -c "mvn package -DskipTests -q && java -jar cli-input-adapter/target/cli-input-adapter-*.jar"
+# Primera vez o cuando hay cambios en el codigo:
+docker run --rm -v "$(pwd):/app" -w /app maven:3.8-eclipse-temurin-11 \
+  sh -c "mvn package -pl cli-input-adapter -am -DskipTests -q -T 1C"
 
-# En bash (Linux/Mac):
+# Ejecutar CLI (segundo comando, en segundos):
 docker run -it --rm -v "$(pwd):/app" -w /app --network personapp-hexa-spring-boot_default \
   -e SPRING_DATASOURCE_URL=jdbc:mariadb://mariadb:3306/persona_db \
   -e SPRING_DATA_MONGODB_HOST=mongodb \
-  maven:3.8-eclipse-temurin-11 sh -c "mvn package -DskipTests -q && java -jar cli-input-adapter/target/cli-input-adapter-*.jar"
+  maven:3.8-eclipse-temurin-11 java -jar cli-input-adapter/target/cli-input-adapter-*.jar
 ```
 
-> Nota: Requiere que los contenedores de las bases de datos esten corriendo via `docker compose up -d`. El contenedor se conecta a la misma red Docker para alcanzar MariaDB y MongoDB por nombre de servicio. La primera ejecucion descarga dependencias (tarda ~2-3 min); las siguientes usan cache.
+> **Build vs Run**: Compilar (`mvn package`) es lento (~1-2 min) porque compila Java y empaqueta el JAR. Solo es necesario cuando cambia el codigo fuente. Ejecutar (`java -jar`) el JAR ya compilado es inmediato (~3 segundos). Por eso los comandos estan separados: build una sola vez, run cada vez que quieras usar el CLI.
 
 **Sin Docker (si tiene JDK 11 + Maven local):**
 ```bash
-mvn spring-boot:run -pl cli-input-adapter
+# Usar el script automatico (reconstruye solo si hay cambios):
+./run-cli.sh
+
+# O manualmente: compilar una vez, ejecutar el JAR despues
+# Build (solo cuando cambia el codigo):
+mvn package -pl cli-input-adapter -am -DskipTests -q -T 1C
+# Run (cada vez, rapido):
+java -jar cli-input-adapter/target/cli-input-adapter-*.jar
 ```
 
 > Nota: Las DBs deben estar accesibles en `localhost:3307` y `localhost:27017` (via `docker compose up -d` o instalacion local).

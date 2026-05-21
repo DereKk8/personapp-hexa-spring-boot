@@ -47,6 +47,7 @@ public class TelefonoMenu {
 				}
 			} catch (InputMismatchException e) {
 				log.warn("Solo se permiten numeros.");
+				keyboard.next();
 			}
 		} while (!isValid);
 	}
@@ -62,36 +63,30 @@ public class TelefonoMenu {
 	}
 
 	private void crearTelefono(TelefonoInputAdapterCli adapter, Scanner keyboard) {
-		keyboard.nextLine();
 		System.out.print("Ingrese numero: ");
 		String num = keyboard.nextLine();
 		System.out.print("Ingrese operador: ");
 		String oper = keyboard.nextLine();
-		System.out.print("Ingrese cc del duenio: ");
-		Integer duenio = keyboard.nextInt();
+		Integer duenio = leerEntero(keyboard, "Ingrese cc del duenio: ");
 		adapter.crearTelefono(new TelefonoModelCli(num, oper, duenio));
 	}
 
 	private void buscarTelefono(TelefonoInputAdapterCli adapter, Scanner keyboard) {
-		keyboard.nextLine();
 		System.out.print("Ingrese numero: ");
 		String num = keyboard.nextLine();
 		adapter.obtenerTelefono(num);
 	}
 
 	private void actualizarTelefono(TelefonoInputAdapterCli adapter, Scanner keyboard) {
-		keyboard.nextLine();
 		System.out.print("Ingrese numero del telefono a actualizar: ");
 		String num = keyboard.nextLine();
 		System.out.print("Ingrese operador: ");
 		String oper = keyboard.nextLine();
-		System.out.print("Ingrese cc del duenio: ");
-		Integer duenio = keyboard.nextInt();
+		Integer duenio = leerEntero(keyboard, "Ingrese cc del duenio: ");
 		adapter.actualizarTelefono(num, new TelefonoModelCli(num, oper, duenio));
 	}
 
 	private void eliminarTelefono(TelefonoInputAdapterCli adapter, Scanner keyboard) {
-		keyboard.nextLine();
 		System.out.print("Ingrese numero: ");
 		String num = keyboard.nextLine();
 		adapter.eliminarTelefono(num);
@@ -103,7 +98,19 @@ public class TelefonoMenu {
 			return keyboard.nextInt();
 		} catch (InputMismatchException e) {
 			log.warn("Solo se permiten numeros.");
+			keyboard.next();
 			return leerOpcion(keyboard);
+		}
+	}
+
+	private static Integer leerEntero(Scanner keyboard, String prompt) {
+		while (true) {
+			System.out.print(prompt);
+			try {
+				return Integer.valueOf(keyboard.nextLine().trim());
+			} catch (NumberFormatException e) {
+				log.warn("Solo se permiten números.");
+			}
 		}
 	}
 }

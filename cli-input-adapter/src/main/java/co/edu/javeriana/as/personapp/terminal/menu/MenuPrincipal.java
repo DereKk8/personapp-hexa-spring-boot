@@ -1,6 +1,7 @@
 package co.edu.javeriana.as.personapp.terminal.menu;
 
 import java.util.InputMismatchException;
+import java.util.NoSuchElementException;
 import java.util.Scanner;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -97,7 +98,11 @@ public class MenuPrincipal {
 			return keyboard.nextInt();
 		} catch (InputMismatchException e) {
 			log.warn("Solo se permiten números.");
+			keyboard.next();
 			return leerOpcion();
+		} catch (NoSuchElementException e) {
+			log.warn("Entrada no disponible, finalizando.");
+			return SALIR;
 		}
 	}
 

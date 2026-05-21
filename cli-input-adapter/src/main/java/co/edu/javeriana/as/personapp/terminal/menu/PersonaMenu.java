@@ -79,8 +79,31 @@ public class PersonaMenu {
 				}
 			} catch (InputMismatchException e) {
 				log.warn("Solo se permiten números.");
+				keyboard.next();
 			}
 		} while (!isValid);
+	}
+
+	private static Integer leerEntero(Scanner keyboard, String prompt) {
+		while (true) {
+			System.out.print(prompt);
+			try {
+				return Integer.valueOf(keyboard.nextLine().trim());
+			} catch (NumberFormatException e) {
+				log.warn("Solo se permiten números.");
+			}
+		}
+	}
+
+	private static String leerGenero(Scanner keyboard) {
+		while (true) {
+			System.out.print("Ingrese genero (M/F): ");
+			String genero = keyboard.nextLine().trim().toUpperCase();
+			if (genero.equals("M") || genero.equals("F")) {
+				return genero;
+			}
+			log.warn("Solo se permiten M o F.");
+		}
 	}
 
 	private void mostrarMenuOpciones() {
@@ -94,15 +117,12 @@ public class PersonaMenu {
 	}
 
 	private void crearPersona(PersonaInputAdapterCli adapter, Scanner keyboard) {
-		System.out.print("Ingrese cc: ");
-		Integer cc = keyboard.nextInt();
-		keyboard.nextLine();
+		Integer cc = leerEntero(keyboard, "Ingrese cc: ");
 		System.out.print("Ingrese nombre: ");
 		String nombre = keyboard.nextLine();
 		System.out.print("Ingrese apellido: ");
 		String apellido = keyboard.nextLine();
-		System.out.print("Ingrese genero (M/F): ");
-		String genero = keyboard.nextLine();
+		String genero = leerGenero(keyboard);
 		System.out.print("Ingrese edad: ");
 		String edadStr = keyboard.nextLine();
 		Integer edad = edadStr.isEmpty() ? null : Integer.valueOf(edadStr);
@@ -110,21 +130,17 @@ public class PersonaMenu {
 	}
 
 	private void buscarPersona(PersonaInputAdapterCli adapter, Scanner keyboard) {
-		System.out.print("Ingrese cc: ");
-		Integer cc = keyboard.nextInt();
+		Integer cc = leerEntero(keyboard, "Ingrese cc: ");
 		adapter.obtenerPersona(cc);
 	}
 
 	private void actualizarPersona(PersonaInputAdapterCli adapter, Scanner keyboard) {
-		System.out.print("Ingrese cc de la persona a actualizar: ");
-		Integer cc = keyboard.nextInt();
-		keyboard.nextLine();
+		Integer cc = leerEntero(keyboard, "Ingrese cc de la persona a actualizar: ");
 		System.out.print("Ingrese nombre: ");
 		String nombre = keyboard.nextLine();
 		System.out.print("Ingrese apellido: ");
 		String apellido = keyboard.nextLine();
-		System.out.print("Ingrese genero (M/F): ");
-		String genero = keyboard.nextLine();
+		String genero = leerGenero(keyboard);
 		System.out.print("Ingrese edad: ");
 		String edadStr = keyboard.nextLine();
 		Integer edad = edadStr.isEmpty() ? null : Integer.valueOf(edadStr);
@@ -132,8 +148,7 @@ public class PersonaMenu {
 	}
 
 	private void eliminarPersona(PersonaInputAdapterCli adapter, Scanner keyboard) {
-		System.out.print("Ingrese cc: ");
-		Integer cc = keyboard.nextInt();
+		Integer cc = leerEntero(keyboard, "Ingrese cc: ");
 		adapter.eliminarPersona(cc);
 	}
 
@@ -150,6 +165,7 @@ public class PersonaMenu {
 			return keyboard.nextInt();
 		} catch (InputMismatchException e) {
 			log.warn("Solo se permiten números.");
+			keyboard.next();
 			return leerOpcion(keyboard);
 		}
 	}
