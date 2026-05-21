@@ -20,14 +20,23 @@ Aplicacion de ejemplo para el laboratorio de Arquitectura de Software usando el 
 
 ## Configuracion del entorno
 
-### Usando Docker Compose (recomendado)
+### Con Docker Compose (recomendado)
 
 ```bash
-# Iniciar bases de datos
+# 1. Iniciar bases de datos
 docker compose up -d
 
-# Verificar que los contenedores esten corriendo
+# 2. Verificar que los contenedores esten corriendo
 docker compose ps
+
+# 3. Construir la imagen de la REST API
+docker build -t personapp-rest .
+
+# 4. Iniciar la aplicacion (puerto 3000)
+docker run -d --network host --name personapp-rest personapp-rest
+
+# 5. Verificar los logs
+docker logs personapp-rest
 ```
 
 ### Sin Docker
@@ -52,20 +61,95 @@ La aplicacion tiene dos adaptadores de entrada (dos SpringApplication independie
 
 ### REST API (puerto 3000)
 
+**Con Docker:**
+```bash
+# Iniciar (si ya construyo la imagen)
+docker run -d --network host --name personapp-rest personapp-rest
+
+# Ver logs en vivo
+docker logs -f personapp-rest
+
+# Detener
+docker stop personapp-rest && docker rm personapp-rest
+```
+
+**Sin Docker (via Maven):**
 ```bash
 mvn spring-boot:run -pl rest-input-adapter
 ```
 
-O desde el JAR:
-
+**Sin Docker (via JAR):**
 ```bash
 java -jar rest-input-adapter/target/rest-input-adapter-*.jar
 ```
 
 ### CLI (linea de comandos)
 
+**Sin Docker:**
 ```bash
 mvn spring-boot:run -pl cli-input-adapter
+```
+
+> Nota: La CLI requiere una terminal interactiva; no se ejecuta dentro del contenedor Docker.
+
+## Probando la API
+
+### Con curl (funciona con o sin Docker)
+
+```bash
+# Obtener todas las personas (MariaDB)
+curl http://localhost:3000/api/v1/persona/MARIA
+
+# Obtener todas las personas (MongoDB)
+curl http://localhost:3000/api/v1/persona/MONGO
+
+# Obtener persona por CC
+curl http://localhost:3000/api/v1/persona/MARIA/1001
+
+# Crear persona
+curl -X POST http://localhost:3000/api/v1/persona \
+  -H "Content-Type: application/json" \
+  -d '{"dni":"2001","firstName":"Ana","lastName":"Lopez","age":"28","sex":"F","database":"MARIA"}'
+
+# Actualizar persona
+curl -X PUT http://localhost:3000/api/v1/persona/MARIA/2001 \
+  -H "Content-Type: application/json" \
+  -d '{"dni":"2001","firstName":"Ana","lastName":"Perez","age":"29","sex":"F","database":"MARIA"}'
+
+# Eliminar persona
+curl -X DELETE http://localhost:3000/api/v1/persona/MARIA/2001
+
+# Profesiones
+curl http://localhost:3000/api/v1/profesion
+curl -X POST http://localhost:3000/api/v1/profesion \
+  -H "Content-Type: application/json" \
+  -d '{"identification":99,"name":"Data Scientist","description":"IA"}' 
+
+# Telefonos
+curl http://localhost:3000/api/v1/telefono
+curl -X POST http://localhost:3000/api/v1/telefono \
+  -H "Content-Type: application/json" \
+  -d '{"number":"3998887766","company":"Claro"}'
+
+# Estudios
+curl http://localhost:3000/api/v1/estudios
+curl -X POST http://localhost:3000/api/v1/estudios \
+  -H "Content-Type: application/json" \
+  -d '{"personIdentification":1001,"professionIdentification":1,"graduationDate":"2020-06-15","universityName":"UNAL"}'
+```
+
+### Con docker exec (solo con Docker)
+
+```bash
+# Ejecutar curl dentro del contenedor
+docker exec personapp-rest curl -s http://localhost:3000/api/v1/persona/MARIA
+docker exec personapp-rest curl -s http://localhost:3000/api/v1/profesion
+
+# Conectarse a la base de datos MariaDB
+docker exec -it persona-mariadb mysql -u root -p
+
+# Conectarse a la base de datos MongoDB
+docker exec -it persona-mongodb mongosh -u admin -p admin
 ```
 
 ## Swagger UI
