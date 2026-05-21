@@ -17,9 +17,6 @@ import lombok.NonNull;
 public class EstudiosMapperMongo {
 
 	@Autowired
-	private PersonaMapperMongo personaMapperMongo;
-
-	@Autowired
 	private ProfesionMapperMongo profesionMapperMongo;
 
 	public EstudiosDocument fromDomainToAdapter(Study study) {
@@ -37,7 +34,9 @@ public class EstudiosMapperMongo {
 	}
 
 	private PersonaDocument validatePrimaryPersona(@NonNull Person person) {
-		return person != null ? personaMapperMongo.fromDomainToAdapter(person) : new PersonaDocument();
+		PersonaDocument doc = new PersonaDocument();
+		doc.setId(person.getIdentification());
+		return doc;
 	}
 
 	private ProfesionDocument validatePrimaryProfesion(@NonNull Profession profession) {
@@ -54,11 +53,13 @@ public class EstudiosMapperMongo {
 
 	public Study fromAdapterToDomain(EstudiosDocument estudiosDocument) {
 		Study study = new Study();
-		study.setPerson(personaMapperMongo.fromAdapterToDomain(estudiosDocument.getPrimaryPersona()));
+		Person person = new Person();
+		person.setIdentification(estudiosDocument.getPrimaryPersona().getId());
+		study.setPerson(person);
 		study.setProfession(profesionMapperMongo.fromAdapterToDomain(estudiosDocument.getPrimaryProfesion()));
 		study.setGraduationDate(validateGraduationDate(estudiosDocument.getFecha()));
 		study.setUniversityName(validateUniversityName(estudiosDocument.getUniver()));
-		return null;
+		return study;
 	}
 
 	private LocalDate validateGraduationDate(LocalDate fecha) {

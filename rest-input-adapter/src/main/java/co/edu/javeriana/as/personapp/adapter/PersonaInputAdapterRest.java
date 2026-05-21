@@ -12,6 +12,7 @@ import co.edu.javeriana.as.personapp.application.port.out.PersonOutputPort;
 import co.edu.javeriana.as.personapp.application.usecase.PersonUseCase;
 import co.edu.javeriana.as.personapp.common.annotations.Adapter;
 import co.edu.javeriana.as.personapp.common.exceptions.InvalidOptionException;
+import co.edu.javeriana.as.personapp.common.exceptions.NoExistException;
 import co.edu.javeriana.as.personapp.common.setup.DatabaseOption;
 import co.edu.javeriana.as.personapp.domain.Gender;
 import co.edu.javeriana.as.personapp.domain.Person;
@@ -73,9 +74,42 @@ public class PersonaInputAdapterRest {
 			return personaMapperRest.fromDomainToAdapterRestMaria(person);
 		} catch (InvalidOptionException e) {
 			log.warn(e.getMessage());
-			//return new PersonaResponse("", "", "", "", "", "", "");
 		}
 		return null;
 	}
 
+	public PersonaResponse obtenerPersona(String database, Integer cc) {
+		try {
+			setPersonOutputPortInjection(database);
+			Person person = personInputPort.findOne(cc);
+			return personaMapperRest.fromDomainToAdapterRest(person,
+					database.equalsIgnoreCase(DatabaseOption.MARIA.toString()) ? "MariaDB" : "MongoDB");
+		} catch (InvalidOptionException | NoExistException e) {
+			log.warn(e.getMessage());
+		}
+		return null;
+	}
+
+	public PersonaResponse actualizarPersona(String database, Integer cc, PersonaRequest request) {
+		try {
+			setPersonOutputPortInjection(database);
+			Person person = personInputPort.edit(cc, personaMapperRest.fromAdapterToDomain(request));
+			return personaMapperRest.fromDomainToAdapterRest(person,
+					database.equalsIgnoreCase(DatabaseOption.MARIA.toString()) ? "MariaDB" : "MongoDB");
+		} catch (InvalidOptionException | NoExistException e) {
+			log.warn(e.getMessage());
+		}
+		return null;
+	}
+
+	public PersonaResponse eliminarPersona(String database, Integer cc) {
+		try {
+			setPersonOutputPortInjection(database);
+			Boolean result = personInputPort.drop(cc);
+			return new PersonaResponse(cc.toString(), "", "", "", "", database, result ? "Eliminado" : "Error");
+		} catch (InvalidOptionException | NoExistException e) {
+			log.warn(e.getMessage());
+		}
+		return null;
+	}
 }

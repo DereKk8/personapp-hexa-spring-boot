@@ -5,6 +5,7 @@ import java.util.Scanner;
 
 import co.edu.javeriana.as.personapp.common.exceptions.InvalidOptionException;
 import co.edu.javeriana.as.personapp.terminal.adapter.PersonaInputAdapterCli;
+import co.edu.javeriana.as.personapp.terminal.model.PersonaModelCli;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -16,7 +17,10 @@ public class PersonaMenu {
 
 	private static final int OPCION_REGRESAR_MOTOR_PERSISTENCIA = 0;
 	private static final int OPCION_VER_TODO = 1;
-	// mas opciones
+	private static final int OPCION_CREAR = 2;
+	private static final int OPCION_BUSCAR = 3;
+	private static final int OPCION_ACTUALIZAR = 4;
+	private static final int OPCION_ELIMINAR = 5;
 
 	public void iniciarMenu(PersonaInputAdapterCli personaInputAdapterCli, Scanner keyboard) {
 		boolean isValid = false;
@@ -56,9 +60,20 @@ public class PersonaMenu {
 					isValid = true;
 					break;
 				case OPCION_VER_TODO:
-					personaInputAdapterCli.historial();					
+					personaInputAdapterCli.historial();
 					break;
-				// mas opciones
+				case OPCION_CREAR:
+					crearPersona(personaInputAdapterCli, keyboard);
+					break;
+				case OPCION_BUSCAR:
+					buscarPersona(personaInputAdapterCli, keyboard);
+					break;
+				case OPCION_ACTUALIZAR:
+					actualizarPersona(personaInputAdapterCli, keyboard);
+					break;
+				case OPCION_ELIMINAR:
+					eliminarPersona(personaInputAdapterCli, keyboard);
+					break;
 				default:
 					log.warn("La opción elegida no es válida.");
 				}
@@ -71,8 +86,55 @@ public class PersonaMenu {
 	private void mostrarMenuOpciones() {
 		System.out.println("----------------------");
 		System.out.println(OPCION_VER_TODO + " para ver todas las personas");
-		// implementar otras opciones
+		System.out.println(OPCION_CREAR + " para crear una persona");
+		System.out.println(OPCION_BUSCAR + " para buscar una persona");
+		System.out.println(OPCION_ACTUALIZAR + " para actualizar una persona");
+		System.out.println(OPCION_ELIMINAR + " para eliminar una persona");
 		System.out.println(OPCION_REGRESAR_MOTOR_PERSISTENCIA + " para regresar");
+	}
+
+	private void crearPersona(PersonaInputAdapterCli adapter, Scanner keyboard) {
+		System.out.print("Ingrese cc: ");
+		Integer cc = keyboard.nextInt();
+		keyboard.nextLine();
+		System.out.print("Ingrese nombre: ");
+		String nombre = keyboard.nextLine();
+		System.out.print("Ingrese apellido: ");
+		String apellido = keyboard.nextLine();
+		System.out.print("Ingrese genero (M/F): ");
+		String genero = keyboard.nextLine();
+		System.out.print("Ingrese edad: ");
+		String edadStr = keyboard.nextLine();
+		Integer edad = edadStr.isEmpty() ? null : Integer.valueOf(edadStr);
+		adapter.crearPersona(new PersonaModelCli(cc, nombre, apellido, genero, edad));
+	}
+
+	private void buscarPersona(PersonaInputAdapterCli adapter, Scanner keyboard) {
+		System.out.print("Ingrese cc: ");
+		Integer cc = keyboard.nextInt();
+		adapter.obtenerPersona(cc);
+	}
+
+	private void actualizarPersona(PersonaInputAdapterCli adapter, Scanner keyboard) {
+		System.out.print("Ingrese cc de la persona a actualizar: ");
+		Integer cc = keyboard.nextInt();
+		keyboard.nextLine();
+		System.out.print("Ingrese nombre: ");
+		String nombre = keyboard.nextLine();
+		System.out.print("Ingrese apellido: ");
+		String apellido = keyboard.nextLine();
+		System.out.print("Ingrese genero (M/F): ");
+		String genero = keyboard.nextLine();
+		System.out.print("Ingrese edad: ");
+		String edadStr = keyboard.nextLine();
+		Integer edad = edadStr.isEmpty() ? null : Integer.valueOf(edadStr);
+		adapter.actualizarPersona(cc, new PersonaModelCli(cc, nombre, apellido, genero, edad));
+	}
+
+	private void eliminarPersona(PersonaInputAdapterCli adapter, Scanner keyboard) {
+		System.out.print("Ingrese cc: ");
+		Integer cc = keyboard.nextInt();
+		adapter.eliminarPersona(cc);
 	}
 
 	private void mostrarMenuMotorPersistencia() {

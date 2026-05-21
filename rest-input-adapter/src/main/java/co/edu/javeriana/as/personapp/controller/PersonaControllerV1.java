@@ -4,9 +4,11 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -38,5 +40,27 @@ public class PersonaControllerV1 {
 	public PersonaResponse crearPersona(@RequestBody PersonaRequest request) {
 		log.info("esta en el metodo crearTarea en el controller del api");
 		return personaInputAdapterRest.crearPersona(request);
+	}
+
+	@ResponseBody
+	@GetMapping(path = "/{database}/{cc}", produces = MediaType.APPLICATION_JSON_VALUE)
+	public PersonaResponse obtenerPersona(@PathVariable String database, @PathVariable Integer cc) {
+		log.info("Into obtenerPersona REST API");
+		return personaInputAdapterRest.obtenerPersona(database.toUpperCase(), cc);
+	}
+
+	@ResponseBody
+	@PutMapping(path = "/{database}/{cc}", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
+	public PersonaResponse actualizarPersona(@PathVariable String database, @PathVariable Integer cc,
+			@RequestBody PersonaRequest request) {
+		log.info("Into actualizarPersona REST API");
+		return personaInputAdapterRest.actualizarPersona(database.toUpperCase(), cc, request);
+	}
+
+	@ResponseBody
+	@DeleteMapping(path = "/{database}/{cc}", produces = MediaType.APPLICATION_JSON_VALUE)
+	public PersonaResponse eliminarPersona(@PathVariable String database, @PathVariable Integer cc) {
+		log.info("Into eliminarPersona REST API");
+		return personaInputAdapterRest.eliminarPersona(database.toUpperCase(), cc);
 	}
 }

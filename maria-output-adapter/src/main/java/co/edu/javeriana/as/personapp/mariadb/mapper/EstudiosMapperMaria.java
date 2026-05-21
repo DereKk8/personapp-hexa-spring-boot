@@ -7,15 +7,15 @@ import java.util.Date;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import co.edu.javeriana.as.personapp.common.annotations.Mapper;
+import co.edu.javeriana.as.personapp.domain.Person;
 import co.edu.javeriana.as.personapp.domain.Study;
 import co.edu.javeriana.as.personapp.mariadb.entity.EstudiosEntity;
 import co.edu.javeriana.as.personapp.mariadb.entity.EstudiosEntityPK;
+import co.edu.javeriana.as.personapp.mariadb.entity.PersonaEntity;
+import co.edu.javeriana.as.personapp.mariadb.entity.ProfesionEntity;
 
 @Mapper
 public class EstudiosMapperMaria {
-
-	@Autowired
-	private PersonaMapperMaria personaMapperMaria;
 
 	@Autowired
 	private ProfesionMapperMaria profesionMapperMaria;
@@ -28,6 +28,12 @@ public class EstudiosMapperMaria {
 		estudio.setEstudiosPK(estudioPK);
 		estudio.setFecha(validateFecha(study.getGraduationDate()));
 		estudio.setUniver(validateUniver(study.getUniversityName()));
+		PersonaEntity persona = new PersonaEntity();
+		persona.setCc(study.getPerson().getIdentification());
+		estudio.setPersona(persona);
+		ProfesionEntity profesion = new ProfesionEntity();
+		profesion.setId(study.getProfession().getIdentification());
+		estudio.setProfesion(profesion);
 		return estudio;
 	}
 
@@ -43,15 +49,17 @@ public class EstudiosMapperMaria {
 
 	public Study fromAdapterToDomain(EstudiosEntity estudiosEntity) {
 		Study study = new Study();
-		study.setPerson(personaMapperMaria.fromAdapterToDomain(estudiosEntity.getPersona()));
+		Person person = new Person();
+		person.setIdentification(estudiosEntity.getPersona().getCc());
+		study.setPerson(person);
 		study.setProfession(profesionMapperMaria.fromAdapterToDomain(estudiosEntity.getProfesion()));
 		study.setGraduationDate(validateGraduationDate(estudiosEntity.getFecha()));
 		study.setUniversityName(validateUniversityName(estudiosEntity.getUniver()));
-		return null;
+		return study;
 	}
 
 	private LocalDate validateGraduationDate(Date fecha) {
-		return fecha != null ? fecha.toInstant().atZone(ZoneId.systemDefault()).toLocalDate() : null;
+		return fecha != null ? new Date(fecha.getTime()).toInstant().atZone(ZoneId.systemDefault()).toLocalDate() : null;
 	}
 
 	private String validateUniversityName(String univer) {
