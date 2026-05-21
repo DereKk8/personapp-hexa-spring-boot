@@ -23,21 +23,23 @@ Aplicacion de ejemplo para el laboratorio de Arquitectura de Software usando el 
 ### Con Docker Compose (recomendado)
 
 ```bash
-# 1. Iniciar bases de datos
-docker compose up -d
+# 1. Construir la imagen e iniciar todo (DBs + app)
+docker compose up -d --build
 
 # 2. Verificar que los contenedores esten corriendo
 docker compose ps
 
-# 3. Construir la imagen de la REST API
-docker build -t personapp-rest .
+# 3. Verificar los logs de la app
+docker compose logs app
 
-# 4. Iniciar la aplicacion (puerto 3000)
-docker run -d --network host --name personapp-rest personapp-rest
+# 4. Seguir logs en vivo
+docker compose logs -f app
 
-# 5. Verificar los logs
-docker logs personapp-rest
+# 5. Detener todo
+docker compose down
 ```
+
+La app queda accesible en `http://localhost:3000` desde el navegador.
 
 ### Sin Docker
 
@@ -61,15 +63,21 @@ La aplicacion tiene dos adaptadores de entrada (dos SpringApplication independie
 
 ### REST API (puerto 3000)
 
-**Con Docker:**
+**Con Docker Compose (recomendado):**
 ```bash
-# Iniciar (si ya construyo la imagen)
+# Construir e iniciar todo
+docker compose up -d --build
+
+# Ver logs
+docker compose logs -f app
+```
+
+**Con Docker (solo la app, para Linux):**
+```bash
+# Requiere MariaDB y MongoDB accesibles en localhost:3307 y localhost:27017
+docker build -t personapp-rest .
 docker run -d --network host --name personapp-rest personapp-rest
-
-# Ver logs en vivo
 docker logs -f personapp-rest
-
-# Detener
 docker stop personapp-rest && docker rm personapp-rest
 ```
 
@@ -85,12 +93,29 @@ java -jar rest-input-adapter/target/rest-input-adapter-*.jar
 
 ### CLI (linea de comandos)
 
-**Sin Docker:**
+**Con Docker (recomendado si no tiene JDK 11 + Maven local):**
+```bash
+# En PowerShell (Windows):
+docker run -it --rm -v "$(pwd):/app" -w /app --network personapp-hexa-spring-boot_default `
+  -e SPRING_DATASOURCE_URL=jdbc:mariadb://mariadb:3306/persona_db `
+  -e SPRING_DATA_MONGODB_HOST=mongodb `
+  maven:3.8-eclipse-temurin-11 mvn spring-boot:run -pl cli-input-adapter
+
+# En bash (Linux/Mac):
+docker run -it --rm -v "$(pwd):/app" -w /app --network personapp-hexa-spring-boot_default \
+  -e SPRING_DATASOURCE_URL=jdbc:mariadb://mariadb:3306/persona_db \
+  -e SPRING_DATA_MONGODB_HOST=mongodb \
+  maven:3.8-eclipse-temurin-11 mvn spring-boot:run -pl cli-input-adapter
+```
+
+> Nota: Requiere que los contenedores de las bases de datos esten corriendo via `docker compose up -d`. El contenedor se conecta a la misma red Docker para alcanzar MariaDB y MongoDB por nombre de servicio.
+
+**Sin Docker (si tiene JDK 11 + Maven local):**
 ```bash
 mvn spring-boot:run -pl cli-input-adapter
 ```
 
-> Nota: La CLI requiere una terminal interactiva; no se ejecuta dentro del contenedor Docker.
+> Nota: Las DBs deben estar accesibles en `localhost:3307` y `localhost:27017` (via `docker compose up -d` o instalacion local).
 
 ## Probando la API
 
