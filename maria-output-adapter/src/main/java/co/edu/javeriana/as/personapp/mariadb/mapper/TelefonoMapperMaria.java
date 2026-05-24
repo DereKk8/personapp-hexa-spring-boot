@@ -25,6 +25,11 @@ public class TelefonoMapperMaria {
 		Phone phone = new Phone();
 		phone.setNumber(telefonoEntity.getNum());
 		phone.setCompany(telefonoEntity.getOper());
+		if (telefonoEntity.getDuenio() != null) {
+			Person owner = new Person();
+			owner.setIdentification(telefonoEntity.getDuenio().getCc());
+			phone.setOwner(owner);
+		}
 		return phone;
 	}
 }

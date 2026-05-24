@@ -68,11 +68,12 @@ public class ProfesionMenu {
 	}
 
 	private void crearProfesion(ProfesionInputAdapterCli adapter, Scanner keyboard) {
+		Integer id = leerEntero(keyboard, "Ingrese id: ");
 		System.out.print("Ingrese nombre: ");
 		String nombre = keyboard.nextLine();
 		System.out.print("Ingrese descripcion: ");
 		String desc = keyboard.nextLine();
-		adapter.crearProfesion(new ProfesionModelCli(null, nombre, desc));
+		adapter.crearProfesion(new ProfesionModelCli(id, nombre, desc));
 	}
 
 	private void buscarProfesion(ProfesionInputAdapterCli adapter, Scanner keyboard) {
