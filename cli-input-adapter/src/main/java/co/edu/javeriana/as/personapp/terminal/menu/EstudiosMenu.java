@@ -18,6 +18,7 @@ public class EstudiosMenu {
 	private static final int OPCION_BUSCAR = 3;
 	private static final int OPCION_ACTUALIZAR = 4;
 	private static final int OPCION_ELIMINAR = 5;
+	private static final int OPCION_CONTAR = 6;
 
 	public void iniciarMenu(EstudiosInputAdapterCli estudiosInputAdapterCli, Scanner keyboard) {
 		boolean isValid = false;
@@ -44,6 +45,9 @@ public class EstudiosMenu {
 				case OPCION_ELIMINAR:
 					eliminarEstudio(estudiosInputAdapterCli, keyboard);
 					break;
+				case OPCION_CONTAR:
+					estudiosInputAdapterCli.contar();
+					break;
 				default:
 					log.warn("La opcion elegida no es valida.");
 				}
@@ -55,12 +59,13 @@ public class EstudiosMenu {
 	}
 
 	private void mostrarMenuOpciones() {
-		System.out.println("----------------------");
+		System.out.println("\n----- Modulo Estudios (MariaDB) -----");
 		System.out.println(OPCION_VER_TODO + " para ver todos los estudios");
 		System.out.println(OPCION_CREAR + " para crear un estudio");
 		System.out.println(OPCION_BUSCAR + " para buscar un estudio");
 		System.out.println(OPCION_ACTUALIZAR + " para actualizar un estudio");
 		System.out.println(OPCION_ELIMINAR + " para eliminar un estudio");
+		System.out.println(OPCION_CONTAR + " para contar los estudios");
 		System.out.println(OPCION_REGRESAR + " para regresar");
 	}
 
@@ -95,12 +100,11 @@ public class EstudiosMenu {
 	}
 
 	private int leerOpcion(Scanner keyboard) {
+		System.out.print("Ingrese una opcion: ");
 		try {
-			System.out.print("Ingrese una opcion: ");
-			return keyboard.nextInt();
-		} catch (InputMismatchException e) {
+			return Integer.parseInt(keyboard.nextLine().trim());
+		} catch (NumberFormatException e) {
 			log.warn("Solo se permiten numeros.");
-			keyboard.next();
 			return leerOpcion(keyboard);
 		}
 	}

@@ -44,14 +44,42 @@ public class PersonaInputAdapterCli {
 		}
 	}
 
+	private boolean sinMotor() {
+		if (personInputPort == null) {
+			log.warn("Seleccione primero un motor de persistencia (MariaDB/MongoDB).");
+			return true;
+		}
+		return false;
+	}
+
 	public void historial() {
-	    log.info("Into historial PersonaEntity in Input Adapter");
-	    personInputPort.findAll().stream()
-	        .map(personaMapperCli::fromDomainToAdapterCli)
-	        .forEach(System.out::println);
+		if (sinMotor()) return;
+		try {
+			List<PersonaModelCli> personas = personInputPort.findAll().stream()
+					.map(personaMapperCli::fromDomainToAdapterCli)
+					.collect(Collectors.toList());
+			System.out.println("----- Personas (" + personas.size() + ") -----");
+			if (personas.isEmpty()) {
+				System.out.println("No hay personas registradas.");
+			} else {
+				personas.forEach(System.out::println);
+			}
+		} catch (Exception e) {
+			log.warn("No se pudo obtener el listado: " + e.getMessage());
+		}
+	}
+
+	public void contar() {
+		if (sinMotor()) return;
+		try {
+			System.out.println("Total de personas: " + personInputPort.count());
+		} catch (Exception e) {
+			log.warn("No se pudo contar: " + e.getMessage());
+		}
 	}
 
 	public void crearPersona(PersonaModelCli modelo) {
+		if (sinMotor()) return;
 		try {
 			PersonaModelCli result = personaMapperCli.fromDomainToAdapterCli(
 					personInputPort.create(personaMapperCli.fromAdapterToDomain(modelo)));
@@ -62,6 +90,7 @@ public class PersonaInputAdapterCli {
 	}
 
 	public void obtenerPersona(Integer cc) {
+		if (sinMotor()) return;
 		try {
 			PersonaModelCli result = personaMapperCli
 					.fromDomainToAdapterCli(personInputPort.findOne(cc));
@@ -72,6 +101,7 @@ public class PersonaInputAdapterCli {
 	}
 
 	public void actualizarPersona(Integer cc, PersonaModelCli modelo) {
+		if (sinMotor()) return;
 		try {
 			PersonaModelCli result = personaMapperCli.fromDomainToAdapterCli(
 					personInputPort.edit(cc, personaMapperCli.fromAdapterToDomain(modelo)));
@@ -82,6 +112,7 @@ public class PersonaInputAdapterCli {
 	}
 
 	public void eliminarPersona(Integer cc) {
+		if (sinMotor()) return;
 		try {
 			Boolean result = personInputPort.drop(cc);
 			System.out.println("Persona eliminada: " + result);

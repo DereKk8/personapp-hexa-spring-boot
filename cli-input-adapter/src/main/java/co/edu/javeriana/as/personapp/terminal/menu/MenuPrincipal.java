@@ -1,6 +1,5 @@
 package co.edu.javeriana.as.personapp.terminal.menu;
 
-import java.util.InputMismatchException;
 import java.util.NoSuchElementException;
 import java.util.Scanner;
 
@@ -61,19 +60,15 @@ public class MenuPrincipal {
 				break;
 			case MODULO_PERSONA:
 				personaMenu.iniciarMenu(personaInputAdapterCli, keyboard);
-				log.info("volvio");
 				break;
 			case MODULO_PROFESION:
 				profesionMenu.iniciarMenu(profesionInputAdapterCli, keyboard);
-				log.info("volvio");
 				break;
 			case MODULO_TELEFONO:
 				telefonoMenu.iniciarMenu(telefonoInputAdapterCli, keyboard);
-				log.info("volvio");
 				break;
 			case MODULO_ESTUDIO:
 				estudiosMenu.iniciarMenu(estudiosInputAdapterCli, keyboard);
-				log.info("volvio");
 				break;
 			default:
 				log.warn("La opción elegida no es válida.");
@@ -84,7 +79,7 @@ public class MenuPrincipal {
 	}
 
 	private void mostrarMenu() {
-		System.out.println("----------------------");
+		System.out.println("\n===== PersonApp - Menu Principal =====");
 		System.out.println(MODULO_PERSONA + " para trabajar con el Modulo de Personas");
 		System.out.println(MODULO_PROFESION + " para trabajar con el Modulo de Profesiones");
 		System.out.println(MODULO_TELEFONO + " para trabajar con el Modulo de Telefonos");
@@ -93,12 +88,11 @@ public class MenuPrincipal {
 	}
 
 	private int leerOpcion() {
+		System.out.print("Ingrese una opción: ");
 		try {
-			System.out.print("Ingrese una opción: ");
-			return keyboard.nextInt();
-		} catch (InputMismatchException e) {
+			return Integer.parseInt(keyboard.nextLine().trim());
+		} catch (NumberFormatException e) {
 			log.warn("Solo se permiten números.");
-			keyboard.next();
 			return leerOpcion();
 		} catch (NoSuchElementException e) {
 			log.warn("Entrada no disponible, finalizando.");

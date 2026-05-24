@@ -16,6 +16,7 @@ public class TelefonoMenu {
 	private static final int OPCION_BUSCAR = 3;
 	private static final int OPCION_ACTUALIZAR = 4;
 	private static final int OPCION_ELIMINAR = 5;
+	private static final int OPCION_CONTAR = 6;
 
 	public void iniciarMenu(TelefonoInputAdapterCli telefonoInputAdapterCli, Scanner keyboard) {
 		boolean isValid = false;
@@ -42,6 +43,9 @@ public class TelefonoMenu {
 				case OPCION_ELIMINAR:
 					eliminarTelefono(telefonoInputAdapterCli, keyboard);
 					break;
+				case OPCION_CONTAR:
+					telefonoInputAdapterCli.contar();
+					break;
 				default:
 					log.warn("La opcion elegida no es valida.");
 				}
@@ -53,12 +57,13 @@ public class TelefonoMenu {
 	}
 
 	private void mostrarMenuOpciones() {
-		System.out.println("----------------------");
+		System.out.println("\n----- Modulo Telefonos (MariaDB) -----");
 		System.out.println(OPCION_VER_TODO + " para ver todos los telefonos");
 		System.out.println(OPCION_CREAR + " para crear un telefono");
 		System.out.println(OPCION_BUSCAR + " para buscar un telefono");
 		System.out.println(OPCION_ACTUALIZAR + " para actualizar un telefono");
 		System.out.println(OPCION_ELIMINAR + " para eliminar un telefono");
+		System.out.println(OPCION_CONTAR + " para contar los telefonos");
 		System.out.println(OPCION_REGRESAR + " para regresar");
 	}
 
@@ -93,12 +98,11 @@ public class TelefonoMenu {
 	}
 
 	private int leerOpcion(Scanner keyboard) {
+		System.out.print("Ingrese una opcion: ");
 		try {
-			System.out.print("Ingrese una opcion: ");
-			return keyboard.nextInt();
-		} catch (InputMismatchException e) {
+			return Integer.parseInt(keyboard.nextLine().trim());
+		} catch (NumberFormatException e) {
 			log.warn("Solo se permiten numeros.");
-			keyboard.next();
 			return leerOpcion(keyboard);
 		}
 	}

@@ -1,5 +1,8 @@
 package co.edu.javeriana.as.personapp.terminal.adapter;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import javax.annotation.PostConstruct;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,10 +36,27 @@ public class TelefonoInputAdapterCli {
 	}
 
 	public void historial() {
-		log.info("Into historial TelefonoEntity in Input Adapter");
-		phoneInputPort.findAll().stream()
-				.map(telefonoMapperCli::fromDomainToAdapterCli)
-				.forEach(System.out::println);
+		try {
+			List<TelefonoModelCli> telefonos = phoneInputPort.findAll().stream()
+					.map(telefonoMapperCli::fromDomainToAdapterCli)
+					.collect(Collectors.toList());
+			System.out.println("----- Telefonos (" + telefonos.size() + ") -----");
+			if (telefonos.isEmpty()) {
+				System.out.println("No hay telefonos registrados.");
+			} else {
+				telefonos.forEach(System.out::println);
+			}
+		} catch (Exception e) {
+			log.warn("No se pudo obtener el listado: " + e.getMessage());
+		}
+	}
+
+	public void contar() {
+		try {
+			System.out.println("Total de telefonos: " + phoneInputPort.count());
+		} catch (Exception e) {
+			log.warn("No se pudo contar: " + e.getMessage());
+		}
 	}
 
 	public void crearTelefono(TelefonoModelCli modelo) {

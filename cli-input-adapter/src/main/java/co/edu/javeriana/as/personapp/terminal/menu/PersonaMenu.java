@@ -21,6 +21,7 @@ public class PersonaMenu {
 	private static final int OPCION_BUSCAR = 3;
 	private static final int OPCION_ACTUALIZAR = 4;
 	private static final int OPCION_ELIMINAR = 5;
+	private static final int OPCION_CONTAR = 6;
 
 	public void iniciarMenu(PersonaInputAdapterCli personaInputAdapterCli, Scanner keyboard) {
 		boolean isValid = false;
@@ -74,6 +75,9 @@ public class PersonaMenu {
 				case OPCION_ELIMINAR:
 					eliminarPersona(personaInputAdapterCli, keyboard);
 					break;
+				case OPCION_CONTAR:
+					personaInputAdapterCli.contar();
+					break;
 				default:
 					log.warn("La opción elegida no es válida.");
 				}
@@ -107,12 +111,13 @@ public class PersonaMenu {
 	}
 
 	private void mostrarMenuOpciones() {
-		System.out.println("----------------------");
+		System.out.println("\n----- Modulo Personas -----");
 		System.out.println(OPCION_VER_TODO + " para ver todas las personas");
 		System.out.println(OPCION_CREAR + " para crear una persona");
 		System.out.println(OPCION_BUSCAR + " para buscar una persona");
 		System.out.println(OPCION_ACTUALIZAR + " para actualizar una persona");
 		System.out.println(OPCION_ELIMINAR + " para eliminar una persona");
+		System.out.println(OPCION_CONTAR + " para contar las personas");
 		System.out.println(OPCION_REGRESAR_MOTOR_PERSISTENCIA + " para regresar");
 	}
 
@@ -153,19 +158,18 @@ public class PersonaMenu {
 	}
 
 	private void mostrarMenuMotorPersistencia() {
-		System.out.println("----------------------");
+		System.out.println("\n----- Personas: elija motor de persistencia -----");
 		System.out.println(PERSISTENCIA_MARIADB + " para MariaDB");
 		System.out.println(PERSISTENCIA_MONGODB + " para MongoDB");
 		System.out.println(OPCION_REGRESAR_MODULOS + " para regresar");
 	}
 
 	private int leerOpcion(Scanner keyboard) {
+		System.out.print("Ingrese una opción: ");
 		try {
-			System.out.print("Ingrese una opción: ");
-			return keyboard.nextInt();
-		} catch (InputMismatchException e) {
+			return Integer.parseInt(keyboard.nextLine().trim());
+		} catch (NumberFormatException e) {
 			log.warn("Solo se permiten números.");
-			keyboard.next();
 			return leerOpcion(keyboard);
 		}
 	}

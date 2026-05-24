@@ -1,5 +1,8 @@
 package co.edu.javeriana.as.personapp.terminal.adapter;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import javax.annotation.PostConstruct;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,10 +36,27 @@ public class ProfesionInputAdapterCli {
 	}
 
 	public void historial() {
-		log.info("Into historial ProfesionEntity in Input Adapter");
-		professionInputPort.findAll().stream()
-				.map(profesionMapperCli::fromDomainToAdapterCli)
-				.forEach(System.out::println);
+		try {
+			List<ProfesionModelCli> profesiones = professionInputPort.findAll().stream()
+					.map(profesionMapperCli::fromDomainToAdapterCli)
+					.collect(Collectors.toList());
+			System.out.println("----- Profesiones (" + profesiones.size() + ") -----");
+			if (profesiones.isEmpty()) {
+				System.out.println("No hay profesiones registradas.");
+			} else {
+				profesiones.forEach(System.out::println);
+			}
+		} catch (Exception e) {
+			log.warn("No se pudo obtener el listado: " + e.getMessage());
+		}
+	}
+
+	public void contar() {
+		try {
+			System.out.println("Total de profesiones: " + professionInputPort.count());
+		} catch (Exception e) {
+			log.warn("No se pudo contar: " + e.getMessage());
+		}
 	}
 
 	public void crearProfesion(ProfesionModelCli modelo) {

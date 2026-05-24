@@ -16,6 +16,7 @@ public class ProfesionMenu {
 	private static final int OPCION_BUSCAR = 3;
 	private static final int OPCION_ACTUALIZAR = 4;
 	private static final int OPCION_ELIMINAR = 5;
+	private static final int OPCION_CONTAR = 6;
 
 	public void iniciarMenu(ProfesionInputAdapterCli profesionInputAdapterCli, Scanner keyboard) {
 		boolean isValid = false;
@@ -42,6 +43,9 @@ public class ProfesionMenu {
 				case OPCION_ELIMINAR:
 					eliminarProfesion(profesionInputAdapterCli, keyboard);
 					break;
+				case OPCION_CONTAR:
+					profesionInputAdapterCli.contar();
+					break;
 				default:
 					log.warn("La opcion elegida no es valida.");
 				}
@@ -53,12 +57,13 @@ public class ProfesionMenu {
 	}
 
 	private void mostrarMenuOpciones() {
-		System.out.println("----------------------");
+		System.out.println("\n----- Modulo Profesiones (MariaDB) -----");
 		System.out.println(OPCION_VER_TODO + " para ver todas las profesiones");
 		System.out.println(OPCION_CREAR + " para crear una profesion");
 		System.out.println(OPCION_BUSCAR + " para buscar una profesion");
 		System.out.println(OPCION_ACTUALIZAR + " para actualizar una profesion");
 		System.out.println(OPCION_ELIMINAR + " para eliminar una profesion");
+		System.out.println(OPCION_CONTAR + " para contar las profesiones");
 		System.out.println(OPCION_REGRESAR + " para regresar");
 	}
 
@@ -101,12 +106,11 @@ public class ProfesionMenu {
 	}
 
 	private int leerOpcion(Scanner keyboard) {
+		System.out.print("Ingrese una opcion: ");
 		try {
-			System.out.print("Ingrese una opcion: ");
-			return keyboard.nextInt();
-		} catch (InputMismatchException e) {
+			return Integer.parseInt(keyboard.nextLine().trim());
+		} catch (NumberFormatException e) {
 			log.warn("Solo se permiten numeros.");
-			keyboard.next();
 			return leerOpcion(keyboard);
 		}
 	}
